@@ -9,11 +9,9 @@ var server = restify.createServer({
 var message,client;
 var logger = new (winston.Logger)({
     transports: [
-        new (winston.transports.Console)(),
         new (winston.transports.File)({ filename: 'logs.log' })
     ]
 });
-
 
 server.use(restify.acceptParser(server.acceptable));
 server.use(restify.queryParser());
@@ -56,7 +54,11 @@ server.post('/post', function (req, res, next) {
         if (error)
             logger.log('error', response.statusCode, { error: error });
         logger.log('info', 'Response from Zooz', { headers: response, body: body });
-        res.send(response.statusCode,JSON.parse(body));
+
+        if (body)
+            res.send(response.statusCode,JSON.parse(body));
+        else
+            res.send(response.statusCode);
     }
 
     request(options, callback);
